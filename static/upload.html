@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>WingSpan - Upload Flight History</title>
+</head>
+<body>
+    <h1>Upload Flight History CSV</h1>
+    <form id="upload-form" enctype="multipart/form-data">
+        <input type="file" name="file" accept=".csv" required>
+        <button type="submit">Upload</button>
+    </form>
+    <div id="response"></div>
+
+    <script>
+        document.getElementById("upload-form").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const responseDiv = document.getElementById("response");
+
+            try {
+                const response = await fetch("/flights/upload_csv", {
+                    method: "POST",
+                    body: formData
+                });
+
+                const result = await response.json();
+                if (response.ok) {
+                    responseDiv.innerHTML = `<p style="color:green;">Success: ${result.rows_inserted} flights uploaded.</p>`;
+                } else {
+                    responseDiv.innerHTML = `<p style="color:red;">Error: ${result.detail}</p>`;
+                }
+            } catch (error) {
+                responseDiv.innerHTML = `<p style="color:red;">Network error: ${error}</p>`;
+            }
+        });
+    </script>
+</body>
+</html>
